@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/component: apiserver
+    app.kubernetes.io/managed-by: brupop
+    app.kubernetes.io/part-of: brupop
+    brupop.bottlerocket.aws/component: apiserver
+  name: brupop-apiserver
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: {{ .Values.replicaCountapiServer }}
+  selector:
+    matchLabels:
+      brupop.bottlerocket.aws/component: apiserver
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 33%
+  template:
+    metadata:
+      labels:
+        brupop.bottlerocket.aws/component: apiserver
+      namespace: {{ .Values.namespace }}
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/os
+                    operator: In
+                    values:
+                      - linux
+                  - key: kubernetes.io/arch
+                    operator: In
+                    values:
+                      - amd64
+                      - arm64
+      containers:
+        - command:
+            - "./apiserver"
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          livenessProbe:
+            httpGet:
+              path: /ping
+              port: 8443
+              scheme: HTTPS
+            initialDelaySeconds: 5
+          name: brupop
+          ports:
+            - containerPort: 8443
+          readinessProbe:
+            httpGet:
+              path: /ping
+              port: 8443
+              scheme: HTTPS
+            initialDelaySeconds: 5
+          volumeMounts:
+            - mountPath: /etc/brupop-tls-keys
+              name: bottlerocket-tls-keys
+      serviceAccountName: brupop-apiserver-service-account
+      volumes:
+        - name: bottlerocket-tls-keys
+          secret:
+            optional: false
+            secretName: brupop-tls

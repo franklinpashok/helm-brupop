@@ -1,0 +1,9 @@
+apiVersion: v2
+name: bottlerocket-brupop
+version: 1.0.3
+description: A Helm chart for EKS bottle rocket update operator
+keywords:
+  - brupop
+  - eks
+type: application
+appVersion: "0.2.2"

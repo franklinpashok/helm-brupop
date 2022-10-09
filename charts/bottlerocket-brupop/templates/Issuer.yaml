@@ -1,0 +1,8 @@
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: my-ca-issuer
+  namespace: {{ .Values.namespace }}
+spec:
+  ca:
+    secretName: brupop-tls

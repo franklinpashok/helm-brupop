@@ -1,0 +1,18 @@
+{{- if .Values.serviceapiserver.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/component: apiserver
+    app.kubernetes.io/managed-by: brupop
+    app.kubernetes.io/part-of: brupop
+    brupop.bottlerocket.aws/component: apiserver
+  name: {{ .Values.serviceapiserver.name }}
+  namespace: {{ .Values.namespace }}
+spec:
+  ports:
+    - port: {{ .Values.serviceapiserver.port }}
+      targetPort: {{ .Values.serviceapiserver.targetPort }}
+  selector:
+    brupop.bottlerocket.aws/component: apiserver
+{{- end -}}

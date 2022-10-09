@@ -1,0 +1,20 @@
+{{- if .Values.rbacapiserver.create -}}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  labels:
+    app.kubernetes.io/component: apiserver
+    app.kubernetes.io/managed-by: brupop
+    app.kubernetes.io/part-of: brupop
+    brupop.bottlerocket.aws/component: apiserver
+  name: {{ .Values.rbacapiserver.name}}-auth-delegator-role-binding
+ #namespace: brupop-bottlerocket-aws
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: "system:auth-delegator"
+subjects:
+  - kind: ServiceAccount
+    name: {{ .Values.serviceaccountapiserver.name }}
+    namespace: {{ .Values.namespace }}
+{{- end -}}
